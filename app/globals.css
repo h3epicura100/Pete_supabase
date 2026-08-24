@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 252 100% 98%; /* #f5f3ff - Light Lavender background */
+    --foreground: 222 47% 11%;  /* #0f172a - Deep Text */
+    --card: 0 0% 100%;           /* White background for cards */
+    --card-foreground: 217 33% 17%; /* #1e293b - Primary Text */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 262 83% 58%;      /* #7c3aed - Primary Action */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 251 91% 95%;    /* #ede9fe - Light Accent */
+    --secondary-foreground: 262 83% 58%;
+    --muted: 214 32% 91%;        /* #e2e8f0 - Surface Background */
+    --muted-foreground: 215 16% 47%; /* #475569 - Secondary Text */
+    --accent: 251 91% 95%;
+    --accent-foreground: 262 83% 58%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 251 91% 95%;        /* #ede9fe - Border Color */
+    --input: 214 32% 91%;         /* #e2e8f0 */
+    --ring: 262 83% 58%;          /* #7c3aed */
+    --chart-1: 262 83% 58%;
+    --chart-2: 243 75% 59%;
+    --chart-3: 199 89% 48%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --radius: 1rem;               /* 16px - rounded-2xl */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom Thin Violet Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c4b5fd; /* #c4b5fd - violet-300 */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #7c3aed; /* #7c3aed - violet-600 */
+}
