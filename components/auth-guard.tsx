@@ -15,27 +15,34 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     const checkAuth = () => {
       const savedUser = sessionStorage.getItem("currentUser")
       if (!savedUser) {
-        router.push("/login")
+        setLoading(true)
+        router.replace("/login")
         return
       }
       
-      const parsedUser: AppUser = JSON.parse(savedUser)
-      setUser(parsedUser)
-      
-      // Check if user has permission for the current page
-      const currentView = pathname.split("/").pop() || ""
-      const isAdmin = parsedUser.role === "admin"
-      
-      if (
-        currentView &&
-        currentView !== "dashboard" &&
-        !isAdmin &&
-        !parsedUser.pages.includes(currentView)
-      ) {
-        router.push("/dashboard")
+      try {
+        const parsedUser: AppUser = JSON.parse(savedUser)
+        setUser(parsedUser)
+        
+        // Check if user has permission for the current page
+        const currentView = pathname.split("/").pop() || ""
+        const isAdmin = parsedUser.role === "admin"
+        
+        if (
+          currentView &&
+          currentView !== "dashboard" &&
+          !isAdmin &&
+          !parsedUser.pages.includes(currentView)
+        ) {
+          router.replace("/dashboard")
+          return
+        }
+        
+        setLoading(false)
+      } catch (e) {
+        sessionStorage.removeItem("currentUser")
+        router.replace("/login")
       }
-      
-      setLoading(false)
     }
 
     checkAuth()
