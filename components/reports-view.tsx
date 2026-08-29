@@ -205,32 +205,38 @@ function ReportsView({ currentUser, onDetailClick }: { currentUser: AppUser, onD
   
     const AnalysisCard = ({ title, icon: Icon, data, type }: { title: string, icon: React.ElementType, data: [string, AnalysisData][], type: string }) => (
         <Card className="hover:border-violet-200 group/card">
-          <CardHeader>
-            <CardTitle className="text-sm"><Icon className="h-4 w-4 text-violet-500" /> {title}</CardTitle>
+          <CardHeader className="p-4 sm:p-5">
+            <CardTitle className="text-sm sm:text-base"><Icon className="h-4 w-4 text-violet-500" /> {title}</CardTitle>
           </CardHeader>
-          <CardContent className="!p-4">
+          <CardContent className="!p-3 sm:!p-4">
             <div className="max-h-[22rem] overflow-y-auto pr-1 space-y-2 custom-scrollbar">
-              {data.map(([key, itemData]) => (
-                <div
-                  key={key}
-                  className="flex justify-between items-center p-4 rounded-xl hover:bg-violet-50/50 border border-transparent hover:border-violet-100 cursor-pointer transition-all duration-300 group"
-                  onClick={() => handleDetailClick(type, key)}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="bg-slate-50 p-2 rounded-lg group-hover:bg-white transition-colors">
-                        <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all" />
+              {data.length > 0 ? (
+                data.map(([key, itemData]) => (
+                  <div
+                    key={key}
+                    className="flex justify-between items-center p-3 sm:p-4 rounded-xl hover:bg-violet-50/50 border border-transparent hover:border-violet-100 cursor-pointer transition-all duration-300 group gap-2"
+                    onClick={() => handleDetailClick(type, key)}
+                  >
+                    <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+                      <div className="bg-slate-50 p-2 rounded-lg group-hover:bg-white transition-colors shrink-0">
+                          <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                          <div className="font-bold text-slate-800 group-hover:text-violet-600 transition-colors uppercase tracking-tight text-xs truncate">{key}</div>
+                          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{itemData.count} entries</div>
+                      </div>
                     </div>
-                    <div>
-                        <div className="font-bold text-slate-800 group-hover:text-violet-600 transition-colors uppercase tracking-tight text-xs">{key}</div>
-                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{itemData.count} entries</div>
+                    <div className="text-right shrink-0 ml-2 space-y-0.5">
+                      <div className="text-emerald-600 font-bold text-xs sm:text-sm">+₹{itemData.incoming.toLocaleString('en-IN', { minimumFractionDigits: 0 })}</div>
+                      <div className="text-rose-500 font-bold text-xs sm:text-sm">-₹{itemData.outgoing.toLocaleString('en-IN', { minimumFractionDigits: 0 })}</div>
                     </div>
                   </div>
-                  <div className="text-right flex-shrink-0 ml-4 space-y-0.5">
-                    <div className="text-emerald-600 font-bold text-sm">+₹{itemData.incoming.toLocaleString('en-IN', { minimumFractionDigits: 0 })}</div>
-                    <div className="text-rose-500 font-bold text-sm">-₹{itemData.outgoing.toLocaleString('en-IN', { minimumFractionDigits: 0 })}</div>
-                  </div>
+                ))
+              ) : (
+                <div className="p-8 text-center text-slate-400 text-xs italic">
+                  No data available for this category
                 </div>
-              ))}
+              )}
             </div>
           </CardContent>
         </Card>
@@ -274,95 +280,69 @@ function ReportsView({ currentUser, onDetailClick }: { currentUser: AppUser, onD
     return value.toLocaleString('en-IN', { maximumFractionDigits: 0 });
   };
 
-  const MetricCard = ({ id, label, value, icon: Icon, colorClass, bgClass, iconBgClass }: { id: string, label: string, value: number, icon: any, colorClass: string, bgClass: string, iconBgClass: string }) => {
-    const isExpanded = visibleMetrics[id];
-    return (
-        <Card 
-            noBg noBorder
-            className={`group hover:scale-[1.02] active:scale-[0.98] cursor-pointer transition-all duration-300 relative overflow-hidden ${bgClass} backdrop-blur-sm`}
-            onClick={() => toggleMetric(id)}
-        >
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Icon className="h-24 w-24 -mr-8 -mt-8" />
-            </div>
-            <CardContent className="p-6 flex justify-between items-center relative z-10">
-                <div className="space-y-1">
-                    <div className={`text-2xl font-black ${colorClass} tracking-tight`}>
-                        {isExpanded ? formatExactIndianLocal(value) : formatAbbreviatedIndianLocal(value)}
-                    </div>
-                    <div className="text-[10px] font-black uppercase tracking-widest text-slate-400/80">{label}</div>
-                </div>
-                <div className={`p-4 rounded-2xl ${iconBgClass} transition-colors shadow-sm`}>
-                    <Icon className={`h-6 w-6 ${colorClass}`} />
-                </div>
-            </CardContent>
-        </Card>
-    );
-  };
-
   return (
-    <div className="p-2 bg-[#f5f3ff] min-h-screen space-y-6">
-
+    <div className="p-3 sm:p-6 bg-[#f5f3ff] min-h-screen space-y-4 sm:space-y-6 max-w-7xl mx-auto w-full overflow-x-hidden">
        <Card className="border-[#ede9fe] shadow-xl shadow-violet-500/5 rounded-2xl overflow-hidden">
-        <CardHeader className="bg-violet-50/70 border-b border-violet-100/80">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <CardTitle className="text-slate-800 flex items-center gap-2.5 text-2xl">
+        <CardHeader className="bg-violet-50/70 border-b border-violet-100/80 p-4 sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <CardTitle className="text-slate-800 flex items-center gap-2.5 text-xl sm:text-2xl font-extrabold tracking-tight">
               <BarChart3 className="h-5 w-5 text-violet-500" />
               Summary Reports
             </CardTitle>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                 {isFilterActive && (
-                    <Button variant="outline" onClick={clearFilters} className="h-10 px-4 text-[10px] text-rose-500 border-rose-100 hover:bg-rose-50">
-                        <X className="h-4 w-4 mr-2" /> Clear Filters
+                    <Button variant="outline" onClick={clearFilters} className="h-10 px-3 sm:px-4 text-[10px] text-rose-500 border-rose-100 hover:bg-rose-50 flex-1 sm:flex-none">
+                        <X className="h-4 w-4 mr-1.5" /> Clear Filters
                     </Button>
                 )}
                 <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
                     <DialogTrigger asChild>
-                        <Button className="h-10 px-5 gap-2">
+                        <Button className="h-10 px-4 sm:px-5 gap-2 flex-1 sm:flex-none">
                             <Filter className="h-4 w-4" />
                             Report Filters
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl rounded-3xl">
-                        <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2">
+                    <DialogContent className="max-w-2xl w-[calc(100vw-1.5rem)] sm:w-full max-h-[88vh] flex flex-col p-0 rounded-2xl sm:rounded-3xl overflow-hidden bg-white shadow-2xl z-[100]" aria-describedby={undefined}>
+                        <DialogHeader className="px-4 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 bg-slate-50/70 shrink-0">
+                            <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
                                 <Filter className="h-5 w-5 text-violet-500" />
                                 Filter Parameters
                             </DialogTitle>
+                            <DialogDescription className="sr-only">Filter summary reports by date range and categories</DialogDescription>
                         </DialogHeader>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
-                            <div><Label>From Date</Label><Input type="date" value={filters.dateFrom} onChange={e => handleFilterChange('dateFrom', e.target.value)} /></div>
-                            <div><Label>To Date</Label><Input type="date" value={filters.dateTo} onChange={e => handleFilterChange('dateTo', e.target.value)} /></div>
+                        <div className="p-4 sm:p-6 overflow-y-auto flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 min-h-0">
+                            <div className="space-y-1"><Label>From Date</Label><Input type="date" value={filters.dateFrom} onChange={e => handleFilterChange('dateFrom', e.target.value)} className="rounded-xl h-11" /></div>
+                            <div className="space-y-1"><Label>To Date</Label><Input type="date" value={filters.dateTo} onChange={e => handleFilterChange('dateTo', e.target.value)} className="rounded-xl h-11" /></div>
                             {currentUser.role === 'admin' && (
-                                <div><Label>Person Name</Label>
+                                <div className="space-y-1"><Label>Person Name</Label>
                                     <Select value={filters.personName} onChange={e => handleFilterChange('personName', e.target.value)}>
                                         <SelectItem value="all">All Persons</SelectItem>
                                         {dropdownOptions.personNames.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
                                     </Select>
                                 </div>
                             )}
-                            <div><Label>Group Head</Label>
+                            <div className="space-y-1"><Label>Group Head</Label>
                                 <Select value={filters.groupHead} onChange={e => handleFilterChange('groupHead', e.target.value)}>
                                     <SelectItem value="all">All Groups</SelectItem>
                                     {dropdownOptions.groupHeads.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}
                                 </Select>
                             </div>
-                            <div><Label>Mode</Label>
+                            <div className="space-y-1"><Label>Mode</Label>
                                 <Select value={filters.mode} onChange={e => handleFilterChange('mode', e.target.value)}>
                                     <SelectItem value="all">All Modes</SelectItem>
                                     {dropdownOptions.modes.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
                                 </Select>
                             </div>
-                            <div><Label>Reason</Label>
+                            <div className="space-y-1"><Label>Reason</Label>
                                 <Select value={filters.reason} onChange={e => handleFilterChange('reason', e.target.value)}>
                                     <SelectItem value="all">All Reasons</SelectItem>
                                     {dropdownOptions.reasons.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                                 </Select>
                             </div>
                         </div>
-                        <DialogFooter className="gap-2">
-                             <Button variant="outline" onClick={() => setIsFilterDialogOpen(false)}>Close</Button>
-                             <Button onClick={() => setIsFilterDialogOpen(false)}>Apply Filters</Button>
+                        <DialogFooter className="px-4 py-3 sm:px-6 sm:py-4 border-t border-slate-100 bg-slate-50/70 shrink-0 flex flex-col-reverse sm:flex-row gap-2 sm:gap-3">
+                             <Button variant="outline" onClick={() => setIsFilterDialogOpen(false)} className="w-full sm:w-auto">Close</Button>
+                             <Button onClick={() => setIsFilterDialogOpen(false)} className="w-full sm:w-auto">Apply Filters</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
@@ -371,7 +351,7 @@ function ReportsView({ currentUser, onDetailClick }: { currentUser: AppUser, onD
         </CardHeader>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 pb-8">
         {cards.map((card, index) => (
             <div key={card.title} className={index === cards.length - 1 && cards.length % 2 !== 0 ? "lg:col-span-2" : ""}>
                 <AnalysisCard {...card} />

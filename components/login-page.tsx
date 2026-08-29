@@ -78,27 +78,27 @@ const LoginPage: React.FC<{ onLogin: (user: AppUser) => void }> = ({ onLogin }) 
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#f5f3ff] flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-xl animate-in fade-in slide-in-from-bottom-6 duration-1000">
+    <div className="min-h-screen w-full bg-[#f5f3ff] flex flex-col items-center justify-center p-3 sm:p-6 pb-20">
+      <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-6 duration-1000">
         <Card className="bg-white border-[#ede9fe] shadow-xl shadow-violet-500/5 rounded-2xl overflow-hidden">
-          <CardHeader className="text-center pt-12 pb-6">
-            <div className="flex justify-center mb-6">
-              <img src="/H3-logo.svg" alt="H3 Logo" className="h-16 w-auto" />
+          <CardHeader className="text-center pt-8 sm:pt-10 pb-4 sm:pb-6 px-6">
+            <div className="flex justify-center mb-4 sm:mb-5">
+              <img src="/H3-logo.svg" alt="H3 Logo" className="h-12 sm:h-14 w-auto" />
             </div>
-            <CardTitle className="text-4xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-500 bg-clip-text text-transparent">
+            <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-500 bg-clip-text text-transparent">
               Pete App
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-12 pb-12 pt-4">
+          <CardContent className="px-5 py-6 sm:px-10 sm:pb-10 sm:pt-2">
             {isLoading ? (
               <div className="flex justify-center items-center py-10">
                 <Loader2 className="h-8 w-8 animate-spin text-violet-500" />
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-8">
+              <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="userId" className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                    <UserIcon className="text-violet-500 w-3 h-3" />
+                    <UserIcon className="text-violet-500 w-3 h-3 shrink-0" />
                     Username
                   </Label>
                   <Input
@@ -107,13 +107,13 @@ const LoginPage: React.FC<{ onLogin: (user: AppUser) => void }> = ({ onLogin }) 
                     placeholder="Enter your username"
                     value={userId}
                     onChange={(e) => setUserId(e.target.value)}
-                    className="h-12 rounded-xl bg-white border-slate-200 focus:border-violet-300 focus:ring-4 focus:ring-violet-500/5 transition-all text-base"
+                    className="h-11 sm:h-12 rounded-xl bg-white border-slate-200 focus:border-violet-300 focus:ring-4 focus:ring-violet-500/5 transition-all text-sm sm:text-base"
                     required
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                    <LockIcon className="text-violet-500 w-3 h-3" />
+                    <LockIcon className="text-violet-500 w-3 h-3 shrink-0" />
                     Password
                   </Label>
                   <Input
@@ -122,14 +122,14 @@ const LoginPage: React.FC<{ onLogin: (user: AppUser) => void }> = ({ onLogin }) 
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="h-12 rounded-xl bg-white border-slate-200 focus:border-violet-300 focus:ring-4 focus:ring-violet-500/5 transition-all text-base"
+                    className="h-11 sm:h-12 rounded-xl bg-white border-slate-200 focus:border-violet-300 focus:ring-4 focus:ring-violet-500/5 transition-all text-sm sm:text-base"
                     required
                   />
                 </div>
-                {error && <p className="text-sm text-red-500 text-center pt-1">{error}</p>}
+                {error && <p className="text-xs sm:text-sm text-red-500 text-center font-medium">{error}</p>}
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-500 hover:opacity-90 transition-all duration-300 text-white font-bold py-3 text-lg h-14 rounded-xl shadow-lg shadow-violet-500/20 active:scale-[0.98]"
+                  className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-500 hover:opacity-90 transition-all duration-300 text-white font-bold py-3 text-base sm:text-lg h-12 sm:h-13 rounded-xl shadow-lg shadow-violet-500/20 active:scale-[0.98]"
                   disabled={isLoading}
                 >
                   {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Login"}
@@ -139,9 +139,6 @@ const LoginPage: React.FC<{ onLogin: (user: AppUser) => void }> = ({ onLogin }) 
           </CardContent>
         </Card>
       </div>
-      <footer className="fixed bottom-0 w-full py-3 text-center text-sm text-white bg-gradient-to-r from-violet-600 to-fuchsia-500">
-        Powered by <a href="https://www.botivate.in/" target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline">Botivate</a>
-      </footer>
     </div>
   );
 };

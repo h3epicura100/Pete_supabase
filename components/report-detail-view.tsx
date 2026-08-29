@@ -119,16 +119,16 @@ function ReportDetailView({
   };
 
   return (
-    <div className="p-2 bg-[#f5f3ff] min-h-screen space-y-6 animate-in fade-in duration-500">
+    <div className="p-3 sm:p-6 bg-[#f5f3ff] min-h-screen space-y-4 sm:space-y-6 max-w-7xl mx-auto w-full overflow-x-hidden animate-in fade-in duration-500">
       {/* Header Card */}
       <Card className="border-[#ede9fe] shadow-xl shadow-slate-200/50 rounded-2xl overflow-hidden">
-        <CardHeader className="bg-violet-50/70 border-b border-violet-100/80">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-4 w-full">
+        <CardHeader className="bg-violet-50/70 border-b border-violet-100/80 p-4 sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
                 <div>
                    <div className="flex items-center gap-2">
-                      <FileText className="h-5 w-5 text-violet-500" />
-                      <h1 className="text-xl font-black text-slate-800 tracking-tight">
+                      <FileText className="h-5 w-5 text-violet-500 shrink-0" />
+                      <h1 className="text-lg sm:text-xl font-black text-slate-800 tracking-tight">
                         {detail.type === "groupHead" && "Group: "}
                         {detail.type === "mode" && "Mode: "}
                         {detail.type === "month" && "Month: "}
@@ -138,9 +138,9 @@ function ReportDetailView({
                    </div>
                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-7">{detail.data.length} transactions found</p>
                 </div>
-                <div className="ml-auto">
-                    <Button onClick={onBack} variant="outline" className="h-10 px-4 rounded-xl text-xs bg-white/50 backdrop-blur-sm border-violet-100 hover:bg-violet-50">
-                        <ArrowLeft className="h-4 w-4 mr-2" /> Back
+                <div>
+                    <Button onClick={onBack} variant="outline" className="h-10 px-4 rounded-xl text-xs bg-white/50 backdrop-blur-sm border-violet-100 hover:bg-violet-50 w-full sm:w-auto">
+                        <ArrowLeft className="h-4 w-4 mr-2" /> Back to Reports
                     </Button>
                 </div>
             </div>
@@ -149,7 +149,7 @@ function ReportDetailView({
       </Card>
 
       {/* Metric Cards Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
         <MetricCard 
             id="income" label="Total Income" value={totalIncoming} icon={TrendingUp} 
             colorClass="text-emerald-600" bgClass="bg-emerald-50/50" iconBgClass="bg-emerald-100/50" 
@@ -168,48 +168,48 @@ function ReportDetailView({
 
       {/* Detailed Transactions Table Card */}
       <Card className="border-[#ede9fe] shadow-xl shadow-violet-500/5 rounded-2xl overflow-hidden mt-0">
-        <CardHeader className="bg-violet-50/70 border-b border-violet-100/80 px-4 py-3">
+        <CardHeader className="bg-violet-50/70 border-b border-violet-100/80 p-3 sm:px-4 sm:py-3">
           <CardTitle className="text-slate-800 text-sm md:text-base font-bold flex items-center gap-2">
             Detailed Transactions
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-auto max-h-[500px] custom-scrollbar">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto w-full max-h-[500px] custom-scrollbar">
+            <table className="w-full text-sm min-w-[650px]">
               <thead className="bg-violet-50/80 sticky top-0 backdrop-blur-sm z-20">
                 <tr className="border-b border-violet-100">
-                  <th className="p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Date</th>
-                  {currentUser.role === "admin" && <th className="p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Person</th>}
-                  <th className="p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Group Head</th>
-                  <th className="p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Reason</th>
-                  <th className="p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Mode</th>
-                  <th className="p-4 text-right text-[10px] font-black uppercase tracking-widest text-violet-600">Income</th>
-                  <th className="p-4 text-right text-[10px] font-black uppercase tracking-widest text-violet-600">Expense</th>
+                  <th className="p-3 sm:p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Date</th>
+                  {currentUser.role === "admin" && <th className="p-3 sm:p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Person</th>}
+                  <th className="p-3 sm:p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Group Head</th>
+                  <th className="p-3 sm:p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Reason</th>
+                  <th className="p-3 sm:p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Mode</th>
+                  <th className="p-3 sm:p-4 text-right text-[10px] font-black uppercase tracking-widest text-violet-600">Income</th>
+                  <th className="p-3 sm:p-4 text-right text-[10px] font-black uppercase tracking-widest text-violet-600">Expense</th>
                 </tr>
               </thead>
               <tbody>
                 {detail.data.length > 0 ? (
                   detail.data.map((transaction) => (
                     <tr key={transaction.id} className="border-b border-slate-50 hover:bg-slate-50/80 transition-colors">
-                      <td className="p-4 text-slate-600 font-medium">{new Date(transaction.date).toLocaleDateString('en-GB')}</td>
-                      {currentUser.role === "admin" && <td className="p-4 text-slate-800 font-bold">{transaction.personName}</td>}
-                      <td className="p-4">
+                      <td className="p-3 sm:p-4 text-slate-600 font-medium">{new Date(transaction.date).toLocaleDateString('en-GB')}</td>
+                      {currentUser.role === "admin" && <td className="p-3 sm:p-4 text-slate-800 font-bold">{transaction.personName}</td>}
+                      <td className="p-3 sm:p-4">
                         <Badge variant="default">{transaction.groupHead}</Badge>
                       </td>
-                      <td className="p-4 text-slate-600">{transaction.reason}</td>
-                      <td className="p-4">
+                      <td className="p-3 sm:p-4 text-slate-600">{transaction.reason}</td>
+                      <td className="p-3 sm:p-4">
                         <Badge variant="secondary">{transaction.mode}</Badge>
                       </td>
-                      <td className="p-4 text-right text-emerald-600 font-bold">
+                      <td className="p-3 sm:p-4 text-right text-emerald-600 font-bold">
                         {transaction.incoming > 0 ? `₹${transaction.incoming.toLocaleString('en-IN', { minimumFractionDigits: 0 })}` : "-"}
                       </td>
-                      <td className="p-4 text-right text-rose-600 font-bold">
+                      <td className="p-3 sm:p-4 text-right text-rose-600 font-bold">
                         {transaction.outgoing > 0 ? `₹${transaction.outgoing.toLocaleString('en-IN', { minimumFractionDigits: 0 })}` : "-"}
                       </td>
                     </tr>
                   ))
                 ) : (
-                  <tr><td colSpan={7} className="p-12 text-center text-slate-400 italic">No transactions found for this selection.</td></tr>
+                  <tr><td colSpan={currentUser.role === "admin" ? 7 : 6} className="p-8 sm:p-12 text-center text-slate-400 italic">No transactions found for this selection.</td></tr>
                 )}
               </tbody>
             </table>

@@ -15,6 +15,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogDescription,
+    DialogFooter,
     DialogTrigger,
 } from "@/components/ui/dialog"
 
@@ -291,36 +292,36 @@ function DashboardView({ currentUser }: { currentUser: AppUser }) {
     );
 
     return (
-        <div className="p-4 sm:p-6 md:p-8 bg-[#f5f3ff] min-h-screen space-y-6">
-            <div className="flex justify-between items-center mb-3">
-                <h2 className="text-2xl font-bold text-slate-800">Overview</h2>
+        <div className="p-3 sm:p-6 md:p-8 bg-[#f5f3ff] min-h-screen space-y-4 sm:space-y-6 max-w-7xl mx-auto w-full overflow-x-hidden">
+            <div className="flex justify-between items-center mb-1 sm:mb-3">
+                <h2 className="text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">Overview</h2>
                 <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
                     <DialogTrigger asChild>
-                        <Button variant="outline" className="gap-2 bg-white border-violet-200 text-violet-600 hover:bg-violet-50 hover:text-violet-700">
+                        <Button variant="outline" className="gap-2 bg-white border-violet-200 text-violet-600 hover:bg-violet-50 hover:text-violet-700 h-9 sm:h-10 px-3 sm:px-4 text-xs sm:text-sm">
                             <Filter className="h-4 w-4" />
                             Filter
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl" aria-describedby={undefined}>
-                        <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2">
+                    <DialogContent className="max-w-2xl w-[calc(100vw-1.5rem)] sm:w-full max-h-[88vh] flex flex-col p-0 rounded-2xl sm:rounded-3xl overflow-hidden bg-white shadow-2xl z-[100]" aria-describedby={undefined}>
+                        <DialogHeader className="px-4 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 bg-slate-50/70 shrink-0">
+                            <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
                                 <Filter className="h-5 w-5 text-violet-500" />
                                 Filter Transactions
                             </DialogTitle>
                             <DialogDescription className="sr-only">Filter transactions overview</DialogDescription>
                         </DialogHeader>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
-                            <div>
+                        <div className="p-4 sm:p-6 overflow-y-auto flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 min-h-0">
+                            <div className="space-y-1">
                                 <Label htmlFor="dateFrom">From Date</Label>
-                                <Input id="dateFrom" type="date" value={filters.dateFrom} onChange={e => handleFilterChange('dateFrom', e.target.value)} />
+                                <Input id="dateFrom" type="date" value={filters.dateFrom} onChange={e => handleFilterChange('dateFrom', e.target.value)} className="rounded-xl h-11" />
                             </div>
-                            <div>
+                            <div className="space-y-1">
                                 <Label htmlFor="dateTo">To Date</Label>
-                                <Input id="dateTo" type="date" value={filters.dateTo} onChange={e => handleFilterChange('dateTo', e.target.value)} />
+                                <Input id="dateTo" type="date" value={filters.dateTo} onChange={e => handleFilterChange('dateTo', e.target.value)} className="rounded-xl h-11" />
                             </div>
 
                             {currentUser.role === 'admin' && (
-                                <div>
+                                <div className="space-y-1">
                                     <Label>Person Name</Label>
                                     <Select value={filters.personName} onChange={e => handleFilterChange('personName', e.target.value)}>
                                         <SelectItem value="all">All Persons</SelectItem>
@@ -329,28 +330,28 @@ function DashboardView({ currentUser }: { currentUser: AppUser }) {
                                 </div>
                             )}
 
-                            <div>
+                            <div className="space-y-1">
                                 <Label>Group Head</Label>
                                 <Select value={filters.groupHead} onChange={e => handleFilterChange('groupHead', e.target.value)}>
                                     <SelectItem value="all">All Groups</SelectItem>
                                     {dropdownOptions.groupHeads.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}
                                 </Select>
                             </div>
-                            <div>
+                            <div className="space-y-1">
                                 <Label>Mode</Label>
                                 <Select value={filters.mode} onChange={e => handleFilterChange('mode', e.target.value)}>
                                     <SelectItem value="all">All Modes</SelectItem>
                                     {dropdownOptions.modes.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
                                 </Select>
                             </div>
-                            <div>
+                            <div className="space-y-1">
                                 <Label>Reason</Label>
                                 <Select value={filters.reason} onChange={e => handleFilterChange('reason', e.target.value)}>
                                     <SelectItem value="all">All Reasons</SelectItem>
                                     {dropdownOptions.reasons.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                                 </Select>
                             </div>
-                            <div>
+                            <div className="space-y-1">
                                 <Label>Month</Label>
                                 <Select value={filters.monthName} onChange={e => handleFilterChange('monthName', e.target.value)}>
                                     <SelectItem value="all">All Months</SelectItem>
@@ -358,109 +359,119 @@ function DashboardView({ currentUser }: { currentUser: AppUser }) {
                                 </Select>
                             </div>
                         </div>
-                        <div className="flex justify-end gap-3 mt-4">
-                            <Button onClick={clearFilters} variant="outline">Clear All</Button>
-                            <Button onClick={() => setIsFilterDialogOpen(false)}>Apply Filters</Button>
-                        </div>
+                        <DialogFooter className="px-4 py-3 sm:px-6 sm:py-4 border-t border-slate-100 bg-slate-50/70 shrink-0 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3">
+                            <Button onClick={clearFilters} variant="outline" className="w-full sm:w-auto">Clear All</Button>
+                            <Button onClick={() => setIsFilterDialogOpen(false)} className="w-full sm:w-auto">Apply Filters</Button>
+                        </DialogFooter>
                     </DialogContent>
                 </Dialog>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                 <Card className="group hover:scale-[1.02] active:scale-[0.98]">
-                    <CardContent className="p-6 flex justify-between items-center">
+                    <CardContent className="p-4 sm:p-6 flex justify-between items-center">
                         <div className="space-y-1">
-                            <div className="text-2xl font-bold text-emerald-600">₹{totalIncoming.toLocaleString('en-IN', { minimumFractionDigits: 0 })}</div>
+                            <div className="text-xl sm:text-2xl font-bold text-emerald-600">₹{totalIncoming.toLocaleString('en-IN', { minimumFractionDigits: 0 })}</div>
                             <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Income</div>
                         </div>
-                        <div className="p-3 bg-emerald-50 rounded-xl group-hover:bg-emerald-100 transition-colors">
-                            <TrendingUp className="h-6 w-6 text-emerald-500" />
+                        <div className="p-2.5 sm:p-3 bg-emerald-50 rounded-xl group-hover:bg-emerald-100 transition-colors">
+                            <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500" />
                         </div>
                     </CardContent>
                 </Card>
                 <Card className="group hover:scale-[1.02] active:scale-[0.98]">
-                    <CardContent className="p-6 flex justify-between items-center">
+                    <CardContent className="p-4 sm:p-6 flex justify-between items-center">
                         <div className="space-y-1">
-                            <div className="text-2xl font-bold text-rose-600">₹{totalOutgoing.toLocaleString('en-IN', { minimumFractionDigits: 0 })}</div>
+                            <div className="text-xl sm:text-2xl font-bold text-rose-600">₹{totalOutgoing.toLocaleString('en-IN', { minimumFractionDigits: 0 })}</div>
                             <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Expense</div>
                         </div>
-                        <div className="p-3 bg-rose-50 rounded-xl group-hover:bg-rose-100 transition-colors">
-                            <TrendingDown className="h-6 w-6 text-rose-500" />
+                        <div className="p-2.5 sm:p-3 bg-rose-50 rounded-xl group-hover:bg-rose-100 transition-colors">
+                            <TrendingDown className="h-5 w-5 sm:h-6 sm:w-6 text-rose-500" />
                         </div>
                     </CardContent>
                 </Card>
                 <Card className="group hover:scale-[1.02] active:scale-[0.98]">
-                    <CardContent className="p-6 flex justify-between items-center">
+                    <CardContent className="p-4 sm:p-6 flex justify-between items-center">
                         <div className="space-y-1">
-                            <div className="text-2xl font-bold text-violet-600">₹{balance.toLocaleString('en-IN', { minimumFractionDigits: 0 })}</div>
+                            <div className="text-xl sm:text-2xl font-bold text-violet-600">₹{balance.toLocaleString('en-IN', { minimumFractionDigits: 0 })}</div>
                             <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Net Balance</div>
                         </div>
-                        <div className="p-3 bg-violet-50 rounded-xl group-hover:bg-violet-100 transition-colors">
-                            <LayoutDashboard className="h-6 w-6 text-violet-600" />
+                        <div className="p-2.5 sm:p-3 bg-violet-50 rounded-xl group-hover:bg-violet-100 transition-colors">
+                            <LayoutDashboard className="h-5 w-5 sm:h-6 sm:w-6 text-violet-600" />
                         </div>
                     </CardContent>
                 </Card>
                 <Card className="group hover:scale-[1.02] active:scale-[0.98]">
-                    <CardContent className="p-6 flex justify-between items-center">
+                    <CardContent className="p-4 sm:p-6 flex justify-between items-center">
                         <div className="space-y-1">
-                            <div className="text-2xl font-bold text-slate-600">{allTransactions.length}</div>
+                            <div className="text-xl sm:text-2xl font-bold text-slate-600">{allTransactions.length}</div>
                             <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Transactions</div>
                         </div>
-                        <div className="p-3 bg-slate-50 rounded-xl group-hover:bg-slate-100 transition-colors">
-                            <FileText className="h-6 w-6 text-slate-500" />
+                        <div className="p-2.5 sm:p-3 bg-slate-50 rounded-xl group-hover:bg-slate-100 transition-colors">
+                            <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-slate-500" />
                         </div>
                     </CardContent>
                 </Card>
             </div>
-            {/* Recent Transactions moved to Row 2 */}
+
+            {/* Recent Transactions */}
             <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle><List className="w-4 h-4 text-violet-500" /> Recent Transactions</CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-5">
+                    <CardTitle className="text-sm sm:text-base"><List className="w-4 h-4 text-violet-500" /> Recent Transactions</CardTitle>
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Last 5 entries</span>
                 </CardHeader>
                 <CardContent className="p-0">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
+                    <div className="overflow-x-auto w-full">
+                        <table className="w-full text-sm min-w-[620px]">
                             <thead>
                                 <tr className="bg-violet-50/80 border-b border-violet-100">
-                                    <th className="p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Date</th>
-                                    {currentUser.role === 'admin' && <th className="p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Person</th>}
-                                    <th className="p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Group Head</th>
-                                    <th className="p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Reason</th>
-                                    <th className="p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Mode</th>
-                                    <th className="p-4 text-right text-[10px] font-black uppercase tracking-widest text-violet-600">Income</th>
-                                    <th className="p-4 text-right text-[10px] font-black uppercase tracking-widest text-violet-600">Expense</th>
+                                    <th className="p-3 sm:p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Date</th>
+                                    {currentUser.role === 'admin' && <th className="p-3 sm:p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Person</th>}
+                                    <th className="p-3 sm:p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Group Head</th>
+                                    <th className="p-3 sm:p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Reason</th>
+                                    <th className="p-3 sm:p-4 text-left text-[10px] font-black uppercase tracking-widest text-violet-600">Mode</th>
+                                    <th className="p-3 sm:p-4 text-right text-[10px] font-black uppercase tracking-widest text-violet-600">Income</th>
+                                    <th className="p-3 sm:p-4 text-right text-[10px] font-black uppercase tracking-widest text-violet-600">Expense</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {recentTransactions.map(t => (
-                                    <tr key={t.id} className="border-b last:border-b-0 border-slate-100 hover:bg-slate-50/80 transition-colors">
-                                        <td className="p-4 text-slate-600">{t.formattedDate}</td>
-                                        {currentUser.role === 'admin' && <td className="p-4 text-slate-700 font-medium">{t.personName}</td>}
-                                        <td className="p-4"><Badge>{t.groupHead}</Badge></td>
-                                        <td className="p-4 text-slate-600">{t.reason}</td>
-                                        <td className="p-4"><Badge variant="secondary">{t.mode}</Badge></td>
-                                        <td className="p-4 text-right text-emerald-600 font-bold">{t.incoming > 0 ? `₹${t.incoming.toLocaleString('en-IN')}` : '-'}</td>
-                                        <td className="p-4 text-right text-rose-600 font-bold">{t.outgoing > 0 ? `₹${t.outgoing.toLocaleString('en-IN')}` : '-'}</td>
+                                {recentTransactions.length > 0 ? (
+                                    recentTransactions.map(t => (
+                                        <tr key={t.id} className="border-b last:border-b-0 border-slate-100 hover:bg-slate-50/80 transition-colors">
+                                            <td className="p-3 sm:p-4 text-slate-600">{t.formattedDate}</td>
+                                            {currentUser.role === 'admin' && <td className="p-3 sm:p-4 text-slate-700 font-medium">{t.personName}</td>}
+                                            <td className="p-3 sm:p-4"><Badge>{t.groupHead}</Badge></td>
+                                            <td className="p-3 sm:p-4 text-slate-600">{t.reason}</td>
+                                            <td className="p-3 sm:p-4"><Badge variant="secondary">{t.mode}</Badge></td>
+                                            <td className="p-3 sm:p-4 text-right text-emerald-600 font-bold">{t.incoming > 0 ? `₹${t.incoming.toLocaleString('en-IN')}` : '-'}</td>
+                                            <td className="p-3 sm:p-4 text-right text-rose-600 font-bold">{t.outgoing > 0 ? `₹${t.outgoing.toLocaleString('en-IN')}` : '-'}</td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={currentUser.role === 'admin' ? 7 : 6} className="p-8 text-center text-slate-400 italic">
+                                            No recent transactions found
+                                        </td>
                                     </tr>
-                                ))}
+                                )}
                             </tbody>
                         </table>
                     </div>
                 </CardContent>
             </Card>
 
-            {/* Charts moved to Row 3 */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            {/* Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
                 <Card className="lg:col-span-3">
-                    <CardHeader><CardTitle>Income, Expense & Balance Trend</CardTitle></CardHeader>
-                    <CardContent className="h-80">
+                    <CardHeader className="p-4 sm:p-5"><CardTitle className="text-sm sm:text-base">Income, Expense & Balance Trend</CardTitle></CardHeader>
+                    <CardContent className="h-72 sm:h-80 p-2 sm:p-6">
                         <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={timeSeriesData}>
+                            <LineChart data={timeSeriesData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="date" tickFormatter={formatXAxisDate} />
+                                <XAxis dataKey="date" tickFormatter={formatXAxisDate} tick={{ fontSize: 11 }} />
                                 <YAxis
-                                    width={72}
+                                    width={60}
+                                    tick={{ fontSize: 11 }}
                                     tickFormatter={(value: number) => {
                                         if (Math.abs(value) >= 100000) return `₹${(value / 100000).toFixed(1)}L`;
                                         if (Math.abs(value) >= 1000) return `₹${(value / 1000).toFixed(0)}K`;
@@ -468,30 +479,30 @@ function DashboardView({ currentUser }: { currentUser: AppUser }) {
                                     }}
                                 />
                                 <Tooltip formatter={(value: number) => `₹${value.toLocaleString('en-IN')}`} />
-                                <Legend />
-                                <Line type="monotone" dataKey="income" name="Income" stroke="#10b981" strokeWidth={3} dot={false} activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }} />
-                                <Line type="monotone" dataKey="expense" name="Expense" stroke="#f43f5e" strokeWidth={3} dot={false} activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }} />
-                                <Line type="monotone" dataKey="balance" name="Balance" stroke="#8b5cf6" strokeWidth={3} dot={false} activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }} />
+                                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
+                                <Line type="monotone" dataKey="income" name="Income" stroke="#10b981" strokeWidth={3} dot={false} activeDot={{ r: 5, stroke: '#fff', strokeWidth: 2 }} />
+                                <Line type="monotone" dataKey="expense" name="Expense" stroke="#f43f5e" strokeWidth={3} dot={false} activeDot={{ r: 5, stroke: '#fff', strokeWidth: 2 }} />
+                                <Line type="monotone" dataKey="balance" name="Balance" stroke="#8b5cf6" strokeWidth={3} dot={false} activeDot={{ r: 5, stroke: '#fff', strokeWidth: 2 }} />
                             </LineChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
                 <Card className="lg:col-span-2">
-                    <CardHeader><CardTitle>Expense by Group Head</CardTitle></CardHeader>
-                    <CardContent className="h-80 flex flex-col items-center justify-center">
+                    <CardHeader className="p-4 sm:p-5"><CardTitle className="text-sm sm:text-base">Expense by Group Head</CardTitle></CardHeader>
+                    <CardContent className="h-72 sm:h-80 p-2 sm:p-6 flex flex-col items-center justify-center">
                         <div className="w-full h-full">
                             {pieExpenseData.length > 0 ? (
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <PieChart>
+                                    <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                                         <Pie
                                             data={pieExpenseData}
                                             dataKey="value"
                                             nameKey="name"
-                                            cx="40%"
+                                            cx="45%"
                                             cy="50%"
-                                            innerRadius={55}
-                                            outerRadius={80}
-                                            paddingAngle={4}
+                                            innerRadius={45}
+                                            outerRadius={70}
+                                            paddingAngle={3}
                                         >
                                             {pieExpenseData.map((_, i) => (
                                                 <Cell key={`cell-${i}`} fill={getPieColor(i)} />
@@ -505,16 +516,16 @@ function DashboardView({ currentUser }: { currentUser: AppUser }) {
                                             iconSize={8}
                                             content={() => {
                                                 return (
-                                                    <ul className="ml-4 text-xs text-slate-600 space-y-1 max-h-56 overflow-y-auto pr-2">
+                                                    <ul className="ml-2 sm:ml-4 text-[11px] sm:text-xs text-slate-600 space-y-1 max-h-56 overflow-y-auto pr-1">
                                                         {majorExpenseItems.map((item, i: number) => (
-                                                            <li key={`legend-major-${item.name}-${i}`} className="flex items-center gap-2">
+                                                            <li key={`legend-major-${item.name}-${i}`} className="flex items-center gap-1.5 sm:gap-2">
                                                                 <div
-                                                                    className="w-3 h-3 rounded-full"
+                                                                    className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0"
                                                                     style={{ backgroundColor: getPieColor(i) }}
                                                                 />
-                                                                <span>
+                                                                <span className="truncate max-w-[90px] sm:max-w-[120px]">
                                                                     {item.name}
-                                                                    <span className="ml-1 text-slate-500">
+                                                                    <span className="ml-1 text-slate-400 font-semibold">
                                                                         ({Math.round(item.percent)}%)
                                                                     </span>
                                                                 </span>
@@ -522,13 +533,13 @@ function DashboardView({ currentUser }: { currentUser: AppUser }) {
                                                         ))}
                                                         {minorExpenseItems.length > 0 && (
                                                             <li
-                                                                className="flex items-center gap-2 text-slate-500 cursor-help"
+                                                                className="flex items-center gap-1.5 sm:gap-2 text-slate-500 cursor-help"
                                                                 title={minorExpenseHoverText}
                                                             >
-                                                                <div className="w-3 h-3 rounded-full bg-slate-300" />
-                                                                <span>
+                                                                <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-slate-300 shrink-0" />
+                                                                <span className="truncate max-w-[90px] sm:max-w-[120px]">
                                                                     Others ({minorExpenseItems.length})
-                                                                    <span className="ml-1">
+                                                                    <span className="ml-1 font-semibold">
                                                                         ({Math.round(minorExpensePercentTotal)}%)
                                                                     </span>
                                                                 </span>
@@ -539,7 +550,7 @@ function DashboardView({ currentUser }: { currentUser: AppUser }) {
                                             }}
                                         />
                                         <Tooltip
-                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '12px' }}
                                             formatter={(value: number) => `₹${value.toLocaleString('en-IN')}`}
                                         />
                                     </PieChart>
