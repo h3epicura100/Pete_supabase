@@ -31,6 +31,13 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 
 const AVAILABLE_PAGES = [
@@ -469,15 +476,16 @@ export default function SettingsPage() {
                 <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                   User Role
                 </label>
-                <select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white h-11"
-                >
-                  <option value="counter">Counter (Standard User)</option>
-                  <option value="compunder">Compounder (Limited Access)</option>
-                  <option value="admin">Administrator (Full Access)</option>
-                </select>
+                <Select value={role} onValueChange={(val) => setRole(val)}>
+                  <SelectTrigger className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white h-11">
+                    <SelectValue placeholder="Select Role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="counter">Counter (Standard User)</SelectItem>
+                    <SelectItem value="compunder">Compounder (Limited Access)</SelectItem>
+                    <SelectItem value="admin">Administrator (Full Access)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Page Access Checkboxes */}

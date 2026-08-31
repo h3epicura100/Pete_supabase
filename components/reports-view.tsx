@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Target, CreditCard, Calendar, Users, Loader2, Filter, X, ChevronRight, BarChart3, Search, TrendingUp, TrendingDown, LayoutDashboard } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 // --- INTERFACES ---
 interface Transaction {
@@ -82,12 +83,7 @@ const Input = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
 const Label = (props: React.LabelHTMLAttributes<HTMLLabelElement>) => (
     <label {...props} className={`block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ${props.className || ''}`} />
 );
-const Select = ({ children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement> & { children: React.ReactNode }) => (
-    <select {...props} className={`w-full h-11 px-3 border border-slate-200 rounded-xl bg-white focus:ring-4 focus:ring-violet-500/5 focus:border-violet-300 transition-all outline-none text-slate-700 appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C/polyline%3E%3C/svg%3E')] bg-[length:1.25rem] bg-[right_0.75rem_center] bg-no-repeat ${props.className || ''}`}>
-        {children}
-    </select>
-);
-const SelectItem = (props: React.OptionHTMLAttributes<HTMLOptionElement>) => <option {...props}>{props.children}</option>;
+
 
 import { fetchTransactionsFromSupabase } from "@/lib/api/transactions";
 import { fetchDropdownOptionsFromSupabase } from "@/lib/api/master";
@@ -315,28 +311,48 @@ function ReportsView({ currentUser, onDetailClick }: { currentUser: AppUser, onD
                             <div className="space-y-1"><Label>To Date</Label><Input type="date" value={filters.dateTo} onChange={e => handleFilterChange('dateTo', e.target.value)} className="rounded-xl h-11" /></div>
                             {currentUser.role === 'admin' && (
                                 <div className="space-y-1"><Label>Person Name</Label>
-                                    <Select value={filters.personName} onChange={e => handleFilterChange('personName', e.target.value)}>
-                                        <SelectItem value="all">All Persons</SelectItem>
-                                        {dropdownOptions.personNames.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                                    <Select value={filters.personName} onValueChange={val => handleFilterChange('personName', val)}>
+                                        <SelectTrigger className="rounded-xl h-11 bg-white border-slate-200">
+                                            <SelectValue placeholder="All Persons" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All Persons</SelectItem>
+                                            {dropdownOptions.personNames.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                                        </SelectContent>
                                     </Select>
                                 </div>
                             )}
                             <div className="space-y-1"><Label>Group Head</Label>
-                                <Select value={filters.groupHead} onChange={e => handleFilterChange('groupHead', e.target.value)}>
-                                    <SelectItem value="all">All Groups</SelectItem>
-                                    {dropdownOptions.groupHeads.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}
+                                <Select value={filters.groupHead} onValueChange={val => handleFilterChange('groupHead', val)}>
+                                    <SelectTrigger className="rounded-xl h-11 bg-white border-slate-200">
+                                        <SelectValue placeholder="All Groups" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All Groups</SelectItem>
+                                        {dropdownOptions.groupHeads.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}
+                                    </SelectContent>
                                 </Select>
                             </div>
                             <div className="space-y-1"><Label>Mode</Label>
-                                <Select value={filters.mode} onChange={e => handleFilterChange('mode', e.target.value)}>
-                                    <SelectItem value="all">All Modes</SelectItem>
-                                    {dropdownOptions.modes.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                                <Select value={filters.mode} onValueChange={val => handleFilterChange('mode', val)}>
+                                    <SelectTrigger className="rounded-xl h-11 bg-white border-slate-200">
+                                        <SelectValue placeholder="All Modes" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All Modes</SelectItem>
+                                        {dropdownOptions.modes.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                                    </SelectContent>
                                 </Select>
                             </div>
                             <div className="space-y-1"><Label>Reason</Label>
-                                <Select value={filters.reason} onChange={e => handleFilterChange('reason', e.target.value)}>
-                                    <SelectItem value="all">All Reasons</SelectItem>
-                                    {dropdownOptions.reasons.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                                <Select value={filters.reason} onValueChange={val => handleFilterChange('reason', val)}>
+                                    <SelectTrigger className="rounded-xl h-11 bg-white border-slate-200">
+                                        <SelectValue placeholder="All Reasons" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All Reasons</SelectItem>
+                                        {dropdownOptions.reasons.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                                    </SelectContent>
                                 </Select>
                             </div>
                         </div>
