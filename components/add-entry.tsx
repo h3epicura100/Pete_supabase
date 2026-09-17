@@ -543,16 +543,35 @@ const FormView: React.FC<FormViewProps> = ({ onAddTransaction, currentUser }) =>
             <DialogTitle className="text-slate-800 font-bold">New Group Head</DialogTitle>
             <DialogDescription className="sr-only">Add new group head option</DialogDescription>
           </DialogHeader>
-          <div className="py-2 space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Group Head Name</Label>
-            <Input value={newGroupHead} onChange={e => setNewGroupHead(e.target.value)} placeholder="e.g. Office Expenses" className="rounded-xl h-11" />
-          </div>
-          <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setIsGroupHeadModalOpen(false)} className="rounded-xl w-full sm:w-auto">Cancel</Button>
-            <Button onClick={handleAddNewGroupHead} disabled={isAddingGroupHead || !newGroupHead.trim()} className="bg-violet-600 text-white rounded-xl w-full sm:w-auto">
-              {isAddingGroupHead ? "Adding..." : "Add Group Head"}
-            </Button>
-          </DialogFooter>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleAddNewGroupHead();
+            }}
+          >
+            <div className="py-2 space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Group Head Name</Label>
+              <Input
+                value={newGroupHead}
+                onChange={e => setNewGroupHead(e.target.value)}
+                placeholder="e.g. Office Expenses"
+                className="rounded-xl h-11"
+                autoFocus
+              />
+            </div>
+            <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-0 mt-4">
+              <Button type="button" variant="outline" onClick={() => setIsGroupHeadModalOpen(false)} className="rounded-xl w-full sm:w-auto">
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isAddingGroupHead || !newGroupHead.trim()}
+                className="bg-violet-600 text-white rounded-xl w-full sm:w-auto"
+              >
+                {isAddingGroupHead ? "Adding..." : "Add Group Head"}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 
@@ -563,18 +582,38 @@ const FormView: React.FC<FormViewProps> = ({ onAddTransaction, currentUser }) =>
             <DialogTitle className="text-slate-800 font-bold">New Vendor</DialogTitle>
             <DialogDescription className="sr-only">Add new vendor option</DialogDescription>
           </DialogHeader>
-          <div className="py-2 space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Vendor Name</Label>
-            <Input value={newVendorName} onChange={e => setNewVendorName(e.target.value)} placeholder="e.g. Apex Traders" className="rounded-xl h-11" />
-          </div>
-          <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setIsVendorModalOpen(false)} className="rounded-xl w-full sm:w-auto">Cancel</Button>
-            <Button onClick={handleAddNewVendor} disabled={isAddingVendor || !newVendorName.trim()} className="bg-violet-600 text-white rounded-xl w-full sm:w-auto">
-              {isAddingVendor ? "Adding..." : "Add Vendor"}
-            </Button>
-          </DialogFooter>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleAddNewVendor();
+            }}
+          >
+            <div className="py-2 space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Vendor Name</Label>
+              <Input
+                value={newVendorName}
+                onChange={e => setNewVendorName(e.target.value)}
+                placeholder="e.g. Apex Traders"
+                className="rounded-xl h-11"
+                autoFocus
+              />
+            </div>
+            <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-0 mt-4">
+              <Button type="button" variant="outline" onClick={() => setIsVendorModalOpen(false)} className="rounded-xl w-full sm:w-auto">
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isAddingVendor || !newVendorName.trim()}
+                className="bg-violet-600 text-white rounded-xl w-full sm:w-auto"
+              >
+                {isAddingVendor ? "Adding..." : "Add Vendor"}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
+
 
       {/* Delete Confirmation Modal */}
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>

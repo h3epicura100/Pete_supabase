@@ -66,20 +66,39 @@ export async function fetchDropdownOptionsFromSupabase(): Promise<{
 
 /**
  * Generic helper to add an option to public.pete_master table.
+ * If the item already exists (case-insensitive), returns true without throwing duplicate key error.
  */
 export async function addDropdownOptionToSupabase(category: string, value: string): Promise<boolean> {
   const trimmed = value.trim();
   if (!trimmed) return false;
+
+  // Check if option already exists (case-insensitive)
+  const { data: existing } = await supabase
+    .from('pete_master')
+    .select('id, value')
+    .eq('category', category)
+    .ilike('value', trimmed)
+    .maybeSingle();
+
+  if (existing) {
+    return true;
+  }
+
   const { error } = await supabase
     .from('pete_master')
     .insert({ category, value: trimmed });
 
   if (error) {
+    // Gracefully handle duplicate key unique constraint violation
+    if (error.code === '23505' || error.message.includes('unique constraint') || error.message.includes('duplicate key')) {
+      return true;
+    }
     console.error(`Error adding dropdown option for ${category}:`, error);
     throw new Error(error.message);
   }
   return true;
 }
+
 
 /**
  * Deletes a row by ID from public.pete_master table.

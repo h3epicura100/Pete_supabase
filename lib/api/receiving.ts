@@ -134,3 +134,69 @@ export async function insertReceivingEntryToSupabase(
 
   return true;
 }
+
+/**
+ * Updates an existing receiving record in Supabase pete_receiving_entries table.
+ */
+export async function updateReceivingEntryInSupabase(
+  id: string,
+  payload: NewReceivingPayload,
+  imageFile: File | null,
+  existingImageUrl?: string
+): Promise<boolean> {
+  let imageUrl = existingImageUrl || '';
+  if (imageFile) {
+    imageUrl = await uploadFileToSupabase(imageFile, 'receiving-proofs');
+  }
+
+  const [vendorRes, modeRes] = await Promise.all([
+    payload.vendorName?.trim()
+      ? supabase.from('pete_master').select('id').eq('category', 'vendor').ilike('value', payload.vendorName.trim()).maybeSingle()
+      : Promise.resolve({ data: null }),
+    payload.mode?.trim()
+      ? supabase.from('pete_master').select('id').eq('category', 'mode').ilike('value', payload.mode.trim()).maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
+
+  const entryDateTimestamptz = formatToTimestamptz(payload.date);
+
+  const { error } = await supabase
+    .from('pete_receiving_entries')
+    .update({
+      entry_date: entryDateTimestamptz,
+      vendor_name: payload.vendorName,
+      vendor_id: vendorRes.data?.id || null,
+      invoice_amount: payload.invoiceAmt,
+      invoice_number: payload.invoiceNumber,
+      mode: payload.mode,
+      mode_id: modeRes.data?.id || null,
+      remarks: payload.remarks || '',
+      image_url: imageUrl,
+    })
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error updating receiving entry:', error);
+    throw new Error(`Failed to update receiving entry: ${error.message}`);
+  }
+
+  return true;
+}
+
+/**
+ * Deletes a receiving record from Supabase pete_receiving_entries table by ID.
+ */
+export async function deleteReceivingEntryFromSupabase(id: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('pete_receiving_entries')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error deleting receiving entry:', error);
+    throw new Error(`Failed to delete receiving entry: ${error.message}`);
+  }
+
+  return true;
+}
+
