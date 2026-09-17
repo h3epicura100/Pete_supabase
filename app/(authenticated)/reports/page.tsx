@@ -6,18 +6,7 @@ import ReportDetailView from "@/components/report-detail-view"
 import type { AppUser } from "@/components/login-page"
 import { Loader2 } from "lucide-react"
 
-interface Transaction {
-  id: string
-  personName: string
-  userId: string
-  date: string
-  monthName: string
-  incoming: number
-  outgoing: number
-  mode: string
-  groupHead: string
-  reason: string
-}
+import { Transaction } from "@/lib/api/transactions"
 
 interface DetailViewData {
   type: string

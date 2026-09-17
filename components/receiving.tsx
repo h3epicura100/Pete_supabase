@@ -138,6 +138,15 @@ const ReceivingPage: React.FC<ReceivingPageProps> = ({ currentUser }) => {
     return vendorFilter !== "all" || dateRange !== undefined || tableSearch.trim() !== "";
   }, [vendorFilter, dateRange, tableSearch]);
 
+  const tableVendors = useMemo(() => {
+    const set = new Set<string>();
+    records.forEach(r => {
+      const v = r.vendorName?.trim();
+      if (v && v !== "-") set.add(v);
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [records]);
+
   const handleClearAllFilters = () => {
     setVendorFilter("all");
     setDateRange(undefined);
@@ -398,7 +407,7 @@ const ReceivingPage: React.FC<ReceivingPageProps> = ({ currentUser }) => {
                   <SelectTrigger className="pl-9 rounded-xl h-10"><SelectValue placeholder="All Vendors" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Vendors</SelectItem>
-                    {dropdownOptions.vendorNames.map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
+                    {tableVendors.map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -457,7 +466,82 @@ const ReceivingPage: React.FC<ReceivingPageProps> = ({ currentUser }) => {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto w-full max-h-[600px]">
+          {/* Mobile Card-like View (Visible on phone screens < md) */}
+          <div className="block md:hidden p-3 space-y-3">
+            {isRecordsLoading ? (
+              <div className="p-8 text-center">
+                <Loader2 className="mx-auto h-6 w-6 animate-spin text-violet-600" />
+                <p className="text-xs text-slate-400 mt-2">Loading receiving records...</p>
+              </div>
+            ) : visibleRecords.length > 0 ? (
+              visibleRecords.map(rec => (
+                <div key={rec.id} className="p-3.5 bg-slate-50/70 hover:bg-violet-50/40 border border-slate-200/80 rounded-2xl space-y-2.5 shadow-sm transition-colors">
+                  {/* Top Bar: Dates & Mode */}
+                  <div className="flex items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold text-slate-800">{formatEntryDate(rec.date)}</span>
+                      <span className="text-[10px] text-slate-400 font-medium">{formatDisplayTimestamp(rec.timestamp)}</span>
+                    </div>
+                    <div>
+                      <span className="inline-flex px-2 py-0.5 rounded-md bg-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-600 border border-slate-200">
+                        {rec.mode}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Main Details: Vendor & Invoice Amount */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-black text-slate-900 truncate">{rec.vendorName}</div>
+                      <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+                        Invoice: <span className="font-semibold text-slate-700">{rec.invoiceNumber || '-'}</span>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="text-xs uppercase font-black tracking-widest text-slate-400">Amount</div>
+                      <div className="text-sm sm:text-base font-mono font-black text-violet-700">
+                        ₹{rec.invoiceAmt.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Remarks & Attachment */}
+                  <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-200/50">
+                    <div className="min-w-0 flex-1">
+                      {rec.remarks ? (
+                        <p className="text-[11px] text-slate-500 truncate" title={rec.remarks}>
+                          <span className="font-semibold text-slate-600">Remarks:</span> {rec.remarks}
+                        </p>
+                      ) : (
+                        <span className="text-[10px] text-slate-300 italic">No remarks</span>
+                      )}
+                    </div>
+                    <div>
+                      {rec.imageLink ? (
+                        <button
+                          type="button"
+                          onClick={() => openPreviewModal(rec.imageLink || "")}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-lg transition-colors border border-purple-200/60 shadow-sm shrink-0"
+                        >
+                          {isPdfFile(rec.imageLink) ? <FileText className="w-3.5 h-3.5" /> : <ImageIcon className="w-3.5 h-3.5" />}
+                          <span>View Doc</span>
+                        </button>
+                      ) : (
+                        <span className="text-[10px] text-slate-300 italic">No doc</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-8 text-center text-slate-400 text-xs italic">
+                No records found matching your filters.
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Tabular View (Hidden on mobile < md) */}
+          <div className="hidden md:block overflow-x-auto w-full max-h-[600px]">
             <table className="w-full text-sm min-w-[700px]">
               <thead className="bg-violet-50/80 sticky top-0 backdrop-blur-sm z-10">
                 <tr className="border-b border-violet-100">

@@ -11,7 +11,8 @@ export interface Transaction {
   outgoing: number;
   mode: string;
   groupHead: string;
-  reason: string;
+  vendorName: string;
+  remarks: string;
   photoLink: string;
   monthName: string;
   formattedDate: string;
@@ -24,7 +25,8 @@ export interface NewTransactionPayload {
   outgoing: number;
   mode: string;
   groupHead: string;
-  reason: string;
+  vendorName: string;
+  remarks: string;
 }
 
 /**
@@ -93,7 +95,8 @@ export async function fetchTransactionsFromSupabase(): Promise<Transaction[]> {
       outgoing: Number(row.outgoing) || 0,
       mode: row.mode || '',
       groupHead: row.group_head || '',
-      reason: row.reason || '',
+      vendorName: row.vendor_name || '',
+      remarks: row.remarks || row.reason || '',
       photoLink: row.photo_url || '',
       monthName: row.month_name || '',
     };
@@ -102,7 +105,7 @@ export async function fetchTransactionsFromSupabase(): Promise<Transaction[]> {
 
 /**
  * Inserts a new transaction into Supabase, uploading proof photo if provided.
- * Resolves person_id, mode_id, and group_head_id automatically from public.pete_master.
+ * Resolves person_id, mode_id, group_head_id, and vendor_id automatically from public.pete_master.
  */
 export async function insertTransactionToSupabase(
   payload: NewTransactionPayload,
@@ -113,16 +116,19 @@ export async function insertTransactionToSupabase(
     photoUrl = await uploadFileToSupabase(photoFile, 'transaction-proofs');
   }
 
-  // Look up foreign key UUIDs for person, mode, and group_head from pete_master table in parallel
-  const [personRes, modeRes, groupRes] = await Promise.all([
-    payload.personName.trim()
+  // Look up foreign key UUIDs for person, mode, group_head, and vendor from pete_master table in parallel
+  const [personRes, modeRes, groupRes, vendorRes] = await Promise.all([
+    payload.personName?.trim()
       ? supabase.from('pete_master').select('id').eq('category', 'person').ilike('value', payload.personName.trim()).maybeSingle()
       : Promise.resolve({ data: null }),
-    payload.mode.trim()
+    payload.mode?.trim()
       ? supabase.from('pete_master').select('id').eq('category', 'mode').ilike('value', payload.mode.trim()).maybeSingle()
       : Promise.resolve({ data: null }),
-    payload.groupHead.trim()
+    payload.groupHead?.trim()
       ? supabase.from('pete_master').select('id').eq('category', 'group_head').ilike('value', payload.groupHead.trim()).maybeSingle()
+      : Promise.resolve({ data: null }),
+    payload.vendorName?.trim()
+      ? supabase.from('pete_master').select('id').eq('category', 'vendor').ilike('value', payload.vendorName.trim()).maybeSingle()
       : Promise.resolve({ data: null }),
   ]);
 
@@ -138,7 +144,9 @@ export async function insertTransactionToSupabase(
     mode_id: modeRes.data?.id || null,
     group_head: payload.groupHead,
     group_head_id: groupRes.data?.id || null,
-    reason: payload.reason,
+    vendor_name: payload.vendorName || null,
+    vendor_id: vendorRes.data?.id || null,
+    remarks: payload.remarks || '',
     photo_url: photoUrl,
   });
 
@@ -149,3 +157,80 @@ export async function insertTransactionToSupabase(
 
   return true;
 }
+
+/**
+ * Updates an existing transaction in Supabase pete_transactions table.
+ */
+export async function updateTransactionInSupabase(
+  id: string,
+  payload: NewTransactionPayload,
+  photoFile: File | null,
+  existingPhotoUrl?: string
+): Promise<boolean> {
+  let photoUrl = existingPhotoUrl || '';
+  if (photoFile) {
+    photoUrl = await uploadFileToSupabase(photoFile, 'transaction-proofs');
+  }
+
+  // Look up foreign key UUIDs in parallel
+  const [personRes, modeRes, groupRes, vendorRes] = await Promise.all([
+    payload.personName?.trim()
+      ? supabase.from('pete_master').select('id').eq('category', 'person').ilike('value', payload.personName.trim()).maybeSingle()
+      : Promise.resolve({ data: null }),
+    payload.mode?.trim()
+      ? supabase.from('pete_master').select('id').eq('category', 'mode').ilike('value', payload.mode.trim()).maybeSingle()
+      : Promise.resolve({ data: null }),
+    payload.groupHead?.trim()
+      ? supabase.from('pete_master').select('id').eq('category', 'group_head').ilike('value', payload.groupHead.trim()).maybeSingle()
+      : Promise.resolve({ data: null }),
+    payload.vendorName?.trim()
+      ? supabase.from('pete_master').select('id').eq('category', 'vendor').ilike('value', payload.vendorName.trim()).maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
+
+  const entryDateTimestamptz = formatToTimestamptz(payload.date);
+
+  const { error } = await supabase
+    .from('pete_transactions')
+    .update({
+      entry_date: entryDateTimestamptz,
+      person_name: payload.personName,
+      person_id: personRes.data?.id || null,
+      incoming: payload.incoming,
+      outgoing: payload.outgoing,
+      mode: payload.mode,
+      mode_id: modeRes.data?.id || null,
+      group_head: payload.groupHead,
+      group_head_id: groupRes.data?.id || null,
+      vendor_name: payload.vendorName || null,
+      vendor_id: vendorRes.data?.id || null,
+      remarks: payload.remarks || '',
+      photo_url: photoUrl,
+    })
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error updating transaction:', error);
+    throw new Error(`Failed to update transaction: ${error.message}`);
+  }
+
+  return true;
+}
+
+/**
+ * Deletes a transaction from Supabase pete_transactions table by ID.
+ */
+export async function deleteTransactionFromSupabase(id: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('pete_transactions')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error deleting transaction:', error);
+    throw new Error(`Failed to delete transaction: ${error.message}`);
+  }
+
+  return true;
+}
+
