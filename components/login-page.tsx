@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 
 // --- TYPE DEFINITIONS (No changes to logic) ---
 export interface AppUser {
@@ -38,6 +38,7 @@ import { fetchUsersFromSupabase } from "@/lib/api/auth";
 const LoginPage: React.FC<{ onLogin: (user: AppUser) => void }> = ({ onLogin }) => {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [users, setUsers] = useState<AppUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -116,15 +117,30 @@ const LoginPage: React.FC<{ onLogin: (user: AppUser) => void }> = ({ onLogin }) 
                     <LockIcon className="text-violet-500 w-3 h-3 shrink-0" />
                     Password
                   </Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="h-11 sm:h-12 rounded-xl bg-white border-slate-200 focus:border-violet-300 focus:ring-4 focus:ring-violet-500/5 transition-all text-sm sm:text-base"
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="h-11 sm:h-12 rounded-xl bg-white border-slate-200 focus:border-violet-300 focus:ring-4 focus:ring-violet-500/5 transition-all text-sm sm:text-base pr-11"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-violet-600 p-1.5 rounded-lg transition-colors focus:outline-none"
+                      title={showPassword ? "Hide password" : "Show password"}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
                 </div>
                 {error && <p className="text-xs sm:text-sm text-red-500 text-center font-medium">{error}</p>}
                 <Button
@@ -142,5 +158,6 @@ const LoginPage: React.FC<{ onLogin: (user: AppUser) => void }> = ({ onLogin }) 
     </div>
   );
 };
+
 
 export default LoginPage;
