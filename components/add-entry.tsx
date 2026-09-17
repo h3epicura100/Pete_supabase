@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format, isWithinInterval, startOfDay, endOfDay, parseISO } from "date-fns"
 import type { DateRange } from "react-day-picker"
+import { formatAmountWithCommas, parseFormattedAmount } from "@/lib/utils"
 
 // --- Interfaces ---
 interface Transaction {
@@ -25,6 +26,7 @@ interface Transaction {
   remarks: string
   photoLink?: string
 }
+
 
 interface TransactionRow {
   id: string
@@ -273,8 +275,8 @@ const FormView: React.FC<FormViewProps> = ({ onAddTransaction, currentUser }) =>
     setFormData({
       personName: t.personName,
       date: t.date,
-      incoming: t.incoming > 0 ? String(t.incoming) : "",
-      outgoing: t.outgoing > 0 ? String(t.outgoing) : "",
+      incoming: t.incoming > 0 ? formatAmountWithCommas(t.incoming) : "",
+      outgoing: t.outgoing > 0 ? formatAmountWithCommas(t.outgoing) : "",
       mode: t.mode,
       groupHead: t.groupHead,
       vendorName: t.vendorName,
@@ -331,6 +333,14 @@ const FormView: React.FC<FormViewProps> = ({ onAddTransaction, currentUser }) =>
   const handleSelectChange = (name: string, value: string) => setFormData(prev => ({ ...prev, [name]: value }))
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => setPhotoFile(e.target.files?.[0] || null)
 
+  const handleAmountInputChange = (field: "incoming" | "outgoing", rawValue: string) => {
+    const cleaned = rawValue.replace(/[^0-9.]/g, "")
+    const parts = cleaned.split(".")
+    const sanitized = parts.length > 2 ? parts[0] + "." + parts.slice(1).join("") : cleaned
+    const formatted = formatAmountWithCommas(sanitized)
+    setFormData(prev => ({ ...prev, [field]: formatted }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -343,8 +353,8 @@ const FormView: React.FC<FormViewProps> = ({ onAddTransaction, currentUser }) =>
           {
             personName: formData.personName,
             date: formData.date,
-            incoming: Number(formData.incoming) || 0,
-            outgoing: Number(formData.outgoing) || 0,
+            incoming: parseFormattedAmount(formData.incoming),
+            outgoing: parseFormattedAmount(formData.outgoing),
             mode: formData.mode,
             groupHead: formData.groupHead,
             vendorName: formData.vendorName,
@@ -359,8 +369,8 @@ const FormView: React.FC<FormViewProps> = ({ onAddTransaction, currentUser }) =>
           {
             personName: formData.personName,
             date: formData.date,
-            incoming: Number(formData.incoming) || 0,
-            outgoing: Number(formData.outgoing) || 0,
+            incoming: parseFormattedAmount(formData.incoming),
+            outgoing: parseFormattedAmount(formData.outgoing),
             mode: formData.mode,
             groupHead: formData.groupHead,
             vendorName: formData.vendorName,
@@ -394,6 +404,7 @@ const FormView: React.FC<FormViewProps> = ({ onAddTransaction, currentUser }) =>
       setIsSubmitting(false)
     }
   }
+
 
   // Delete transaction handler
   const handleDeleteTransaction = async () => {
@@ -469,12 +480,35 @@ const FormView: React.FC<FormViewProps> = ({ onAddTransaction, currentUser }) =>
               {/* Row 2: Incoming Amount & Outgoing Amount */}
               <div className="space-y-1">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Incoming Amount</Label>
-                <Input type="number" step="0.01" name="incoming" placeholder="0.00" value={formData.incoming} onChange={handleInputChange} className="rounded-xl h-11" />
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-sm pointer-events-none">₹</span>
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    name="incoming"
+                    placeholder="0.00"
+                    value={formData.incoming}
+                    onChange={e => handleAmountInputChange("incoming", e.target.value)}
+                    className="pl-8 rounded-xl h-11 font-mono font-bold text-slate-800"
+                  />
+                </div>
               </div>
               <div className="space-y-1">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Outgoing Amount</Label>
-                <Input type="number" step="0.01" name="outgoing" placeholder="0.00" value={formData.outgoing} onChange={handleInputChange} className="rounded-xl h-11" />
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-sm pointer-events-none">₹</span>
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    name="outgoing"
+                    placeholder="0.00"
+                    value={formData.outgoing}
+                    onChange={e => handleAmountInputChange("outgoing", e.target.value)}
+                    className="pl-8 rounded-xl h-11 font-mono font-bold text-slate-800"
+                  />
+                </div>
               </div>
+
 
               {/* Row 3: Mode & Group Head */}
               <div className="space-y-1">

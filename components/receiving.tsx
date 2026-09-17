@@ -12,12 +12,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format, isWithinInterval, startOfDay, endOfDay, parseISO } from "date-fns";
 import type { DateRange } from "react-day-picker";
+import { formatAmountWithCommas, parseFormattedAmount } from "@/lib/utils";
 
 // --- INTERFACES ---
 interface ReceivingEntry {
   date: string;
   vendorName: string;
-  invoiceAmt: number;
+  invoiceAmt: string;
   invoiceNumber: string;
   mode: string;
   remarks: string;
@@ -65,11 +66,12 @@ const ReceivingPage: React.FC<ReceivingPageProps> = ({ currentUser }) => {
   const [formData, setFormData] = useState<ReceivingEntry>({
     date: new Date().toISOString().split('T')[0],
     vendorName: '',
-    invoiceAmt: 0,
+    invoiceAmt: '',
     invoiceNumber: '',
     mode: '',
     remarks: '',
   });
+
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [fileInputKey, setFileInputKey] = useState(Date.now());
   const [dropdownOptions, setDropdownOptions] = useState<ReceivingDropdownOptions>({ vendorNames: [], modes: [] });
@@ -168,7 +170,7 @@ const ReceivingPage: React.FC<ReceivingPageProps> = ({ currentUser }) => {
     setFormData({
       date: new Date().toISOString().split('T')[0],
       vendorName: '',
-      invoiceAmt: 0,
+      invoiceAmt: '',
       invoiceNumber: '',
       mode: '',
       remarks: '',
@@ -183,7 +185,7 @@ const ReceivingPage: React.FC<ReceivingPageProps> = ({ currentUser }) => {
     setFormData({
       date: rec.date || new Date().toISOString().split('T')[0],
       vendorName: rec.vendorName,
-      invoiceAmt: rec.invoiceAmt,
+      invoiceAmt: rec.invoiceAmt > 0 ? formatAmountWithCommas(rec.invoiceAmt) : '',
       invoiceNumber: rec.invoiceNumber,
       mode: rec.mode,
       remarks: rec.remarks || '',
@@ -191,6 +193,14 @@ const ReceivingPage: React.FC<ReceivingPageProps> = ({ currentUser }) => {
     setImageFile(null);
     setFileInputKey(Date.now());
     setIsFormOpen(true);
+  };
+
+  const handleInvoiceAmtChange = (rawValue: string) => {
+    const cleaned = rawValue.replace(/[^0-9.]/g, '');
+    const parts = cleaned.split('.');
+    const sanitized = parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : cleaned;
+    const formatted = formatAmountWithCommas(sanitized);
+    setFormData(prev => ({ ...prev, invoiceAmt: formatted }));
   };
 
   const handleAddNewVendor = async () => {
@@ -230,7 +240,7 @@ const ReceivingPage: React.FC<ReceivingPageProps> = ({ currentUser }) => {
           {
             date: formData.date,
             vendorName: formData.vendorName,
-            invoiceAmt: Number(formData.invoiceAmt) || 0,
+            invoiceAmt: parseFormattedAmount(formData.invoiceAmt),
             invoiceNumber: formData.invoiceNumber,
             mode: formData.mode,
             remarks: formData.remarks,
@@ -244,7 +254,7 @@ const ReceivingPage: React.FC<ReceivingPageProps> = ({ currentUser }) => {
           {
             date: formData.date,
             vendorName: formData.vendorName,
-            invoiceAmt: Number(formData.invoiceAmt) || 0,
+            invoiceAmt: parseFormattedAmount(formData.invoiceAmt),
             invoiceNumber: formData.invoiceNumber,
             mode: formData.mode,
             remarks: formData.remarks,
@@ -257,7 +267,7 @@ const ReceivingPage: React.FC<ReceivingPageProps> = ({ currentUser }) => {
       setFormData({
         date: new Date().toISOString().split('T')[0],
         vendorName: '',
-        invoiceAmt: 0,
+        invoiceAmt: '',
         invoiceNumber: '',
         mode: '',
         remarks: '',
@@ -275,6 +285,7 @@ const ReceivingPage: React.FC<ReceivingPageProps> = ({ currentUser }) => {
       setIsSubmitting(false);
     }
   };
+
 
   const handleDeleteRecord = async () => {
     if (!deleteTarget) return;
@@ -355,8 +366,20 @@ const ReceivingPage: React.FC<ReceivingPageProps> = ({ currentUser }) => {
               </div>
               <div className="space-y-1">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Invoice Amount</Label>
-                <Input type="number" step="0.01" value={formData.invoiceAmt || ''} onChange={e => setFormData(p => ({...p, invoiceAmt: parseFloat(e.target.value) || 0}))} className="rounded-xl h-11" required />
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-sm pointer-events-none">₹</span>
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    placeholder="0.00"
+                    value={formData.invoiceAmt}
+                    onChange={e => handleInvoiceAmtChange(e.target.value)}
+                    className="pl-8 rounded-xl h-11 font-mono font-bold text-slate-800"
+                    required
+                  />
+                </div>
               </div>
+
               <div className="space-y-1">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Invoice Number</Label>
                 <Input type="text" value={formData.invoiceNumber} onChange={e => setFormData(p => ({...p, invoiceNumber: e.target.value}))} className="rounded-xl h-11" required />
